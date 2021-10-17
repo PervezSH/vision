@@ -1,0 +1,37 @@
+MainScreenManager:
+
+<MainScreenManager>:
+    Screen:
+        name: "start_screen"
+        Image:
+            source: 'ui/StartingPage/rectangle.png'
+            allow_stretch: True
+            keep_ratio: False
+        FloatLayout:
+            MDCard:
+                orientation: "vertical"
+                md_bg_color: 0, 0, 0, 0
+                size_hint: 1, 1
+                elevation: 10
+                pos_hint: {"center_x": 0.5, "top": 1}
+                Image:
+                    source: 'ui/StartingPage/main.png'
+                    allow_stretch: True
+                    keep_ratio: True
+                Image:
+                    source: 'ui/StartingPage/vision.png'
+                Button:
+                    text: "hello"
+                    size_hint: None, None
+                    size: "200dp", "50dp"
+                    pos_hint: {'center_x': 0.5}
+                    background_color: 0,0,0,0
+                    on_press: app.manager.start_button_clicked() ;app.manager.push('main_screen')
+                    Image:
+                        source: 'ui/StartingPage/start_button.png'
+                        size: self.texture_size
+                        center_x: self.parent.center_x
+                        center_y: self.parent.center_y
+
+<MainScreen>:
+    name: "main_screen"
