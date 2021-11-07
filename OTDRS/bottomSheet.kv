@@ -1,0 +1,12 @@
+<BottomSheetMain>:
+    MDIconButton:
+        icon: "close"
+        user_font_size: "25sp"
+        on_press: app.manager.pop()
+    MDCard:
+        orientation: "vertical"
+        pos_hint: {"center_x": .5, "center_y": .5}
+        elevation: 10
+        radius: [30, ]
+        StackLayout:
+            spacing: "5dp", "5dp"

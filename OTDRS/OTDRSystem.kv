@@ -1,3 +1,7 @@
+#:import bottomSheet bottomSheet
+#:import bottomSheetTR bottomSheetTR
+#:import bottomSheetWP bottomSheetWP
+
 MainScreenManager:
 
 <MainScreenManager>:
@@ -32,6 +36,18 @@ MainScreenManager:
                         size: self.texture_size
                         center_x: self.parent.center_x
                         center_y: self.parent.center_y
+    Screen:
+        name: "bottom_sheet_screen"
+        BottomSheetMain:
+    Screen:
+        name: "bottom_sheet_tr"
+        BottomSheetTR:
+            text: root.recognized_text
+            image_path: root.image_path
+    Screen:
+        name: "bottom_sheet_wp"
+        BottomSheetWP:
+            image_path: root.image_path
 
 <MainScreen>:
     name: "main_screen"

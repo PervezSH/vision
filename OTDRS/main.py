@@ -10,6 +10,9 @@ import cv2
 from kivymd.font_definitions import theme_font_styles
 from kivymd.uix.button import MDIconButton, MDFloatingActionButtonSpeedDial
 from kivymd.uix.label import MDLabel
+from datetime import datetime
+import textRecognition
+import warpPerspective
 
 
 class MainScreen(Screen):
@@ -18,6 +21,8 @@ class MainScreen(Screen):
 class MainScreenManager(ScreenManager):
     screen_stack = []
     header_text = StringProperty()
+    recognized_text = StringProperty()
+    image_path = StringProperty()
 
     options = {
         'Warp Perspective': 'perspective-less',
@@ -50,24 +55,29 @@ class MainScreenManager(ScreenManager):
     #displaying cam feed
         screen_layout.add_widget(self.image_per_frame)
     #capture button
-        screen_layout.add_widget(MDIconButton(icon="camera-iris",
-                                              pos_hint={"center_x": .5, "center_y": .1},
-                                              user_font_size="45sp",
-                                              theme_text_color="Custom",
-                                              text_color= utils.get_color_from_hex('CEDFF0')))
+        capture_button = MDIconButton(icon="camera-iris",
+                                      pos_hint={"center_x": .5, "center_y": .1},
+                                      user_font_size="45sp",
+                                      theme_text_color="Custom",
+                                      text_color= utils.get_color_from_hex('CEDFF0'))
+        screen_layout.add_widget(capture_button)
+        capture_button.bind(on_press=self.take_picture)
 
     #select from gallery button
-        screen_layout.add_widget(MDIconButton(icon='camera-burst',
-                                              pos_hint={"center_x": .15, "center_y": .1},
-                                              user_font_size="30sp",
-                                              theme_text_color="Custom",
-                                              text_color=utils.get_color_from_hex('CEDFF0')
-                                              ))
+        gallery_button = MDIconButton(icon='camera-burst',
+                                      pos_hint={"center_x": .15, "center_y": .1},
+                                      user_font_size="30sp",
+                                      theme_text_color="Custom",
+                                      text_color=utils.get_color_from_hex('CEDFF0')
+                                      )
+        screen_layout.add_widget(gallery_button)
+        gallery_button.bind(on_press=self.open_gallery)
     #Floating Speed dial button
         speed_dial = MDFloatingActionButtonSpeedDial(callback= self.callback)
         speed_dial.data = self.options
         speed_dial.root_button_anim = True
         screen_layout.add_widget(speed_dial)
+        self.ids['my_speed_dial'] = speed_dial
     #video capture
         self.capture = cv2.VideoCapture(0)
         Clock.schedule_interval(self.update, 1 / 60)
@@ -120,17 +130,57 @@ class MainScreenManager(ScreenManager):
 
         self.ids.my_header_label.text = self.header_text
 
-    def update(self, a):
+    def update(self, *args):
         self.load_video()
 
-    def load_video(self):
+    def createTexture(self, frame):
+        buffer = cv2.flip(frame, 0).tobytes()
+        texture = Texture.create(size=(frame.shape[1], frame.shape[0]), colorfmt='bgr')
+        texture.blit_buffer(buffer, colorfmt='bgr', bufferfmt='ubyte')
+        return texture
+
+    def load_video(self, *args):
         ret, frame = self.capture.read()
         if not ret:
             return
-        buffer = cv2.flip(frame, 0).tobytes()
-        texture = Texture.create(size=(frame.shape[1], frame.shape[0]), colorfmt='bgr')
-        texture.blit_buffer(buffer, colorfmt='bgr', bufferfmt= 'ubyte')
-        self.image_per_frame.texture = texture
+        self.image_per_frame_cv = frame
+    #WarpPerspective
+        if self.header_text == 'Warp Perspective':
+            texture = self.load_video_for_warpPerspective(frame)
+            self.image_per_frame.texture = texture
+        else:
+            texture = self.createTexture(frame)
+            self.image_per_frame.texture = texture
+
+    def load_video_for_warpPerspective(self, image_per_frame_cv):
+        imgBigContour, warpedImg = warpPerspective.warpPers(image_per_frame_cv)
+        texture = self.createTexture(imgBigContour)
+        return texture
+
+
+    def take_picture(self, *args):
+        now = datetime.now()
+        image_name = 'Image'+now.strftime("_%Y_%m_%d_%H_%M_%S.png")
+        imgCaptured = self.image_per_frame_cv
+    #Recognize Text
+        if self.header_text == 'Recognize Text':
+            self.recognized_text = textRecognition.getText(self.image_per_frame_cv)
+    #WarpPerspective
+        elif self.header_text == 'Warp Perspective':
+            imgBigContour, warpedImg = warpPerspective.warpPers(self.image_per_frame_cv)
+            imgCaptured = warpedImg
+
+        cv2.imwrite(image_name, imgCaptured)
+        self.image_path = image_name
+
+        if self.header_text == 'Recognize Text':
+            self.push('bottom_sheet_tr')
+        elif self.header_text == 'Warp Perspective':
+            self.push('bottom_sheet_wp')
+
+
+    def open_gallery(self, *args):
+        self.push('bottom_sheet_screen')
 
 
 class OTDRSystem(MDApp):
