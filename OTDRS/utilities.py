@@ -32,12 +32,13 @@ def reorder(points):
     reorderedPoints[2] = points[np.argmax(diff)]
     return  reorderedPoints
 
-def warpImg(img, points, w, h):
+def warpImg(img, points, w, h, pad=20):
     points = reorder(points)
     pts1 = np.float32(points)
     pts2 = np.float32([[0, 0], [w, 0], [0, h], [w, h]])
     matrix = cv2.getPerspectiveTransform(pts1, pts2)
     imgWarp = cv2.warpPerspective(img, matrix, (w,h))
+    imgWarp = imgWarp[pad:imgWarp.shape[0]-pad, pad:imgWarp.shape[1]-pad]
     return  imgWarp
 
 
@@ -55,3 +56,6 @@ def valTrackers():
     Thresholds2 = cv2.getTrackbarPos("Threshold2", "Trackbars")
     src = Thresholds1, Thresholds2
     return src
+
+def findDistance(pts1, pts2):
+    return ((pts2[0]-pts1[0])**2 + (pts2[1]-pts1[1])**2)**0.5

@@ -1,12 +1,30 @@
 <BottomSheetMain>:
+    orientation: "vertical"
     MDIconButton:
         icon: "close"
+        pos_hint: { "center_x": .5}
         user_font_size: "25sp"
         on_press: app.manager.pop()
     MDCard:
         orientation: "vertical"
         pos_hint: {"center_x": .5, "center_y": .5}
         elevation: 10
-        radius: [30, ]
-        StackLayout:
-            spacing: "5dp", "5dp"
+        ScrollView:
+            StackLayout:
+                spacing: "5dp", "5dp"
+                MDCard:
+                    size_hint: 0.25, 0.15
+                    FitImage:
+                        source: "images/1.jpg"
+                MDCard:
+                    size_hint: 0.25, 0.15
+                    FitImage:
+                        source: "images/2.jpg"
+                MDCard:
+                    size_hint: 0.25, 0.15
+                    FitImage:
+                        source: "images/3.jpg"
+                MDCard:
+                    size_hint: 0.25, 0.15
+                    FitImage:
+                        source: "images/4.png"

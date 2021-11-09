@@ -28,7 +28,7 @@ def warpPers(img):
     imgBigContour, finalContours = utilities.getContour(imgBigContour, contours, min_area=5000, filter=4, draw=True)
     if len(finalContours) != 0:
         biggestContours = finalContours[0][2]
-        imgWarp =  utilities.warpImg(img, biggestContours, widthP, hieghtP)
+        imgWarp =  utilities.warpImg(img, biggestContours, widthP, hieghtP, 0)
         return imgBigContour, imgWarp
     else:
         return imgWarp, imgWarp

@@ -11,8 +11,14 @@ from kivymd.font_definitions import theme_font_styles
 from kivymd.uix.button import MDIconButton, MDFloatingActionButtonSpeedDial
 from kivymd.uix.label import MDLabel
 from datetime import datetime
+
+import measureDimension
+import objectDetection
 import textRecognition
 import warpPerspective
+
+pathImage = "images/4.png"
+img = cv2.imread(pathImage)
 
 
 class MainScreen(Screen):
@@ -26,6 +32,7 @@ class MainScreenManager(ScreenManager):
 
     options = {
         'Warp Perspective': 'perspective-less',
+        'Object Detection': 'cube-scan',
         'Recognize Text': 'text-recognition',
         'Measure': 'tape-measure',
     }
@@ -49,6 +56,9 @@ class MainScreenManager(ScreenManager):
     def start_button_clicked(self):
         self.image_per_frame = Image(allow_stretch=True)
         self.header_text = 'Measure'
+    #Object Detection
+        self.tinyNetwork = objectDetection.initializeNetwork()
+        self.network = objectDetection.initializeNetwork(tiny=False)
     #adding screen
         screen_layout = MainScreen(name='main_screen')
         self.add_widget(screen_layout)
@@ -127,6 +137,8 @@ class MainScreenManager(ScreenManager):
             self.header_text = 'Recognize Text'
         elif instance.icon == 'perspective-less':
             self.header_text = 'Warp Perspective'
+        elif instance.icon == 'cube-scan':
+            self.header_text = 'Object Detection'
 
         self.ids.my_header_label.text = self.header_text
 
@@ -142,11 +154,14 @@ class MainScreenManager(ScreenManager):
     def load_video(self, *args):
         ret, frame = self.capture.read()
         if not ret:
-            return
+            frame = img
         self.image_per_frame_cv = frame
     #WarpPerspective
-        if self.header_text == 'Warp Perspective':
+        if self.header_text == 'Warp Perspective' and self.header_text == 'Measure':
             texture = self.load_video_for_warpPerspective(frame)
+            self.image_per_frame.texture = texture
+        elif self.header_text == 'Object Detection':
+            texture = self.load_video_for_object_detection(frame)
             self.image_per_frame.texture = texture
         else:
             texture = self.createTexture(frame)
@@ -157,6 +172,11 @@ class MainScreenManager(ScreenManager):
         texture = self.createTexture(imgBigContour)
         return texture
 
+    def load_video_for_object_detection(self, image_per_frame_cv):
+        objectDetectedImg = objectDetection.detectObject(self.tinyNetwork, image_per_frame_cv)
+        texture = self.createTexture(objectDetectedImg)
+        return texture
+
 
     def take_picture(self, *args):
         now = datetime.now()
@@ -165,6 +185,13 @@ class MainScreenManager(ScreenManager):
     #Recognize Text
         if self.header_text == 'Recognize Text':
             self.recognized_text = textRecognition.getText(self.image_per_frame_cv)
+            imgCaptured = textRecognition.boundingBoxes(imgCaptured)
+    #Object Detection
+        elif self.header_text == 'Object Detection':
+            imgCaptured = objectDetection.detectObject(self.network, imgCaptured)
+    #Measure
+        elif self.header_text == 'Measure':
+            imgCaptured = measureDimension.measureDim(self.image_per_frame_cv)
     #WarpPerspective
         elif self.header_text == 'Warp Perspective':
             imgBigContour, warpedImg = warpPerspective.warpPers(self.image_per_frame_cv)
@@ -175,9 +202,8 @@ class MainScreenManager(ScreenManager):
 
         if self.header_text == 'Recognize Text':
             self.push('bottom_sheet_tr')
-        elif self.header_text == 'Warp Perspective':
-            self.push('bottom_sheet_wp')
-
+        else:
+            self.push('bottom_sheet_all')
 
     def open_gallery(self, *args):
         self.push('bottom_sheet_screen')
