@@ -11,20 +11,40 @@
         elevation: 10
         ScrollView:
             StackLayout:
+                id: gallery_stack_layout
                 spacing: "5dp", "5dp"
                 MDCard:
                     size_hint: 0.25, 0.15
-                    FitImage:
-                        source: "images/1.jpg"
+                    Button:
+                        background_normal: "images/1.jpg"
+                        on_press: app.manager.chooseImage("images/1.jpg")
                 MDCard:
                     size_hint: 0.25, 0.15
-                    FitImage:
-                        source: "images/2.jpg"
+                    Button:
+                        background_normal: "images/2.jpg"
+                        on_press: app.manager.chooseImage("images/2.jpg")
                 MDCard:
                     size_hint: 0.25, 0.15
-                    FitImage:
-                        source: "images/3.jpg"
+                    Button:
+                        background_normal: "images/3.jpg"
+                        on_press: app.manager.chooseImage("images/3.jpg")
                 MDCard:
                     size_hint: 0.25, 0.15
-                    FitImage:
-                        source: "images/4.png"
+                    Button:
+                        background_normal: "images/4.png"
+                        on_press: app.manager.chooseImage("images/4.png")
+                MDCard:
+                    size_hint: 0.25, 0.15
+                    Button:
+                        background_normal: "images/5.jpg"
+                        on_press: app.manager.chooseImage("images/5.jpg")
+                MDCard:
+                    size_hint: 0.25, 0.15
+                    Button:
+                        background_normal: "images/6.jpg"
+                        on_press: app.manager.chooseImage("images/6.jpg")
+                MDCard:
+                    size_hint: 0.25, 0.15
+                    Button:
+                        background_normal: "images/7.jpg"
+                        on_press: app.manager.chooseImage("images/7.jpg")

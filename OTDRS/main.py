@@ -1,3 +1,5 @@
+import shutil
+
 from kivy import utils
 from kivy.clock import Clock
 from kivy.core.text import LabelBase
@@ -7,6 +9,7 @@ from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.app import MDApp
 import cv2
+import os
 from kivymd.font_definitions import theme_font_styles
 from kivymd.uix.button import MDIconButton, MDFloatingActionButtonSpeedDial
 from kivymd.uix.label import MDLabel
@@ -17,7 +20,8 @@ import objectDetection
 import textRecognition
 import warpPerspective
 
-pathImage = "images/4.png"
+pathImage = "images/1.jpg"
+imgChosen = False
 img = cv2.imread(pathImage)
 
 
@@ -153,10 +157,9 @@ class MainScreenManager(ScreenManager):
 
     def load_video(self, *args):
         ret, frame = self.capture.read()
-        if not ret:
+        if not ret or imgChosen:
             frame = img
         self.image_per_frame_cv = frame
-    #WarpPerspective
         if self.header_text == 'Warp Perspective' and self.header_text == 'Measure':
             texture = self.load_video_for_warpPerspective(frame)
             self.image_per_frame.texture = texture
@@ -173,7 +176,8 @@ class MainScreenManager(ScreenManager):
         return texture
 
     def load_video_for_object_detection(self, image_per_frame_cv):
-        objectDetectedImg = objectDetection.detectObject(self.tinyNetwork, image_per_frame_cv)
+        #objectDetectedImg = objectDetection.detectObject(self.tinyNetwork, image_per_frame_cv)
+        objectDetectedImg = image_per_frame_cv
         texture = self.createTexture(objectDetectedImg)
         return texture
 
@@ -205,8 +209,23 @@ class MainScreenManager(ScreenManager):
         else:
             self.push('bottom_sheet_all')
 
+    def saveImage(self, imgPath):
+        path = 'images'
+        shutil.move(imgPath, path)
+
+    def deleteCapturedImage(self, imgPath):
+        if os.path.exists(imgPath):
+            os.remove(imgPath)
+
     def open_gallery(self, *args):
         self.push('bottom_sheet_screen')
+
+    def chooseImage(self, imgPath):
+        global img
+        img = cv2.imread(imgPath)
+        global imgChosen
+        imgChosen = True
+        self.pop()
 
 
 class OTDRSystem(MDApp):

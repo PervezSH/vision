@@ -9,7 +9,7 @@
             icon: "close"
             user_font_size: "25sp"
             pos_hint: { "center_x": .5}
-            on_press: app.manager.pop()
+            on_press: app.manager.pop(); app.manager.deleteCapturedImage(root.image_path)
         BoxLayout:
             orientation: "vertical"
             MDCard:

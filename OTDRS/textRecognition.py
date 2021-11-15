@@ -25,7 +25,11 @@ def realTimeTextRecognition():
             break
 
 def getText(img):
-    return pytesseract.image_to_string(img)
+    #Preprocessing
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    adaptive_threshold = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 85, 11)
+
+    return pytesseract.image_to_string(adaptive_threshold)
 
 #Detecting Words
 def boundingBoxes(img):

@@ -30,7 +30,7 @@ def reorder(points):
     diff = np.diff(points, axis=1)
     reorderedPoints[1] = points[np.argmin(diff)]
     reorderedPoints[2] = points[np.argmax(diff)]
-    return  reorderedPoints
+    return reorderedPoints
 
 def warpImg(img, points, w, h, pad=20):
     points = reorder(points)
