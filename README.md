@@ -5,3 +5,6 @@ The proposed system is composed of object – text detection and dimensioning ne
 Download Configuration and Weight File for YoloV3-320 and YoloV3-tiny, and put them into the OTDRS folder.
 
 Model Configuration and Weight Files: https://pjreddie.com/darknet/yolo/
+
+Object detection module detecting persons and car in a frame:
+![image](https://user-images.githubusercontent.com/50441829/144867097-cd6e352b-ff84-47dd-9a49-3933a87385c4.png)
