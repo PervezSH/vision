@@ -1,4 +1,4 @@
-# Object-Text-Detection-and-Recognition-Application (Vision)
+# Vision - Object-Text Detection and Recognition Application
 
 ## About The Project
 
